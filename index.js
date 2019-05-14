@@ -24,36 +24,17 @@ var opts = {
 
 
 function detectCode() {
-    console.log("Called")
     NodeWebcam.capture("test_picture", opts, function (err, data) {
-        
+        cmd.get(
+            'tesseract test_picture.png stdout',
+            function (err, data, stderr) {
+                if (found = regex.exec(data)) {
+                    console.log(found[0]);
+                } 
+                detectCode();
+            }
+        );
     });
 }
 
-var fs = require('fs');
-var http = require('http');
-//Node.js Function to save image from External URL.
-function saveImageToDisk(url, localPath) {
-    var fullUrl = url;
-    var file = fs.createWriteStream(localPath);
-    var request = http.get(url, function (response) {
-        response.pipe(file);
-    });
-}
-
-function detectImageFromRemoteIPCamera() {
-    setInterval(() => {
-        saveImageToDisk("http://172.16.91.158:8080/shot.jpg", "test_picture.png");
-    }, 1000);
-}
-
-cmd.get(
-    'tesseract testa.png stdout',
-    function (err, data, stderr) {
-        console.log(data);
-        if (found = regex.exec(data)) {
-            console.log(found[0]);
-        }
-        detectCode();
-    }
-);
+detectCode();
